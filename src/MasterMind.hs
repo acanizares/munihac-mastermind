@@ -7,6 +7,8 @@ import Control.Monad
 type Row = [Int]
 type Guess = Row
 type Solution = Row
+type Score = Maybe (Int, Int) -- Just (black, white)
+                              -- Nothing when there is no info yet
 
 data Player = H | C
     deriving (Show, Eq)
@@ -27,20 +29,17 @@ main = do
     p <- parsePlayer <$> getLine
 
     if p == H
-     then loop s p [] []
+     then loop s p Nothing []
      else do
          putStrLn ("(" ++ show s ++ " = solution)")
-         loop s p [] [ [q, w, e, r] | q <- [1 .. colors]
-                                       , w <- [1 .. colors]
-                                       , e <- [1 .. colors]
-                                       , r <- [1 .. colors]]
+         loop s p Nothing $ prod colors width
 
 -- The loop function is supposed to perform a single interaction. It
 -- reads an input, compares it with the solution, produces output to
 -- the user, and if the guess of the player was incorrect, loops.
 loop :: Solution ->
         Player   ->
-        [Int]    ->   -- [b, w] for last guess
+        Score    ->   -- (b, w) for last guess
         [Guess]  ->   -- last set of guesses, its head is the last guess
         IO ()
 loop s p score gs =
@@ -75,22 +74,22 @@ weakMatch (x:xs) l
                 | x == y = ys
                 | otherwise = y : delFst x ys
 
-check :: Solution -> Guess -> ([Int], -- number of black and white points,
+check :: Solution -> Guess -> (Score, -- number of black and white points,
                                Bool)  -- all-correct guess?
 check solution guess =
     let black' = black solution guess
-    in ([black', white solution guess], black' == width)
+    in (Just (black', white solution guess), black' == width)
 
 -- report is supposed to take the result of calling check, and
 -- produces a descriptive string to report to the player.
-report :: ([Int], Bool) -> String
-report ([blackScore, whiteScore], correct)
+report :: (Score, Bool) -> String
+report (Just (blackScore, whiteScore), correct)
     | correct = "Yay!! You're a mastermind."
     | otherwise = show blackScore ++ " black,\n"
                ++ show whiteScore ++ " white."
 
 input :: Player
-      -> [Int]      -- [black, white] for last guess
+      -> Score      -- (black, white) for last guess
       -> [Guess]    -- last subset of guesses
       -> IO [Guess] -- new subset of guesses (its head is the new guess)
 input H _ _= do
@@ -110,14 +109,13 @@ exactly b blacks and w whites from g0, since we know this must hold for the corr
 solution. As g1 we choose the head of gs1. In the step n we take a subset of gsn,
 so it is guaranteed we don't make the same guess twice.
 -}
-makeGuess :: [Int]       -- [b, w] for last guess
+
+makeGuess :: Score       -- (b, w) for last guess
           -> [Guess]     -- last guess subset
           -> [Guess]     -- new guess subset
-makeGuess [] gs = gs
-makeGuess [b, w] gs  = gs'
-    where
-        g = head gs   -- old guess
-        gs' = [x | x <- gs, black g x == b, white g x == w] -- new set of guesses
+makeGuess Nothing gs = gs
+makeGuess (Just (b, w)) gs@(g:_) = -- g is the last guess
+    [x | x <- gs, black g x == b, white g x == w] -- new set gs' of guesses
 
 -- The following function |readInt| is given and parses a single
 -- integer from a string. It produces |-1| if the parse fails. You
@@ -153,3 +151,8 @@ generateSolution =
     g <- getStdGen
     let rs = take width (randoms g)
     return (map ((+1) . (`mod` colors)) rs)
+
+-- Generate the set [1..c]^w
+prod :: Int -> Int -> [[Int]]
+prod c 1 = [[x] | x <- [1..c]]
+prod c w = [x:xs | x <- [1..c], xs <- prod c (w-1)]
