@@ -96,13 +96,13 @@ input :: Player
       -> [Guess]    -- last subset of guesses
       -> IO [Guess] -- new subset of guesses (its head is the new guess)
 input H _ _= do
-    putStr "? "
+    putStr "> "
     hFlush stdout
     g <- (map readInt . words) <$> getLine
     return [g]
 input C score gs =
     let gs' = makeGuess score gs
-    in putStrLn ("? " ++ show (head gs')) >> return gs'
+    in putStrLn ("> " ++ show (head gs')) >> return gs'
 
 {- The computer player starts with a prefixed guess g0 taken from the set gs0
 of all possible guesses. The next guess g1 is done as follows: with the

@@ -24,16 +24,16 @@ Below you see a sample (human) game:
 ```
 Is the player a (H)uman or a (C)omputer?
 > H
-? > 1 2 3 4
+> 1 2 3 4
 2 black,
 0 white.
-? > 1 2 1 1
+> 1 2 1 1
 0 black,
 0 white.
-? > 5 5 3 4
+> 5 5 3 4
 3 black,
 0 white.
-? > 6 5 3 4
+> 6 5 3 4
 Yay!! You're a mastermind.
 ``` 
 If that's too easy you can change in the code the parameters
