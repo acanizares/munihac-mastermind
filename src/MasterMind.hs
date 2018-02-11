@@ -14,8 +14,8 @@ data Player = H | C
     deriving (Show, Eq)
 
 colors, width :: Int
-colors = 6
-width  = 4
+colors = 6  -- How many different numbers
+width  = 4  -- Length of the sequence
 
 -- A function that indicates places on which you have to work:
 tODO :: a -> a
@@ -29,7 +29,10 @@ main = do
     p <- parsePlayer <$> getLine
 
     if p == H
-     then loop s p Nothing []
+     then do
+        putStrLn ("Guess a sequence of " ++ show width ++ " numbers from 1 to " ++ show colors ++".")
+        putStrLn "Write your guess separating the numbers by whitespaces (e.g. 1 2 2 1)."
+        loop s p Nothing []
      else do
          putStrLn ("(" ++ show s ++ " = solution)")
          loop s p Nothing $ prod colors width
