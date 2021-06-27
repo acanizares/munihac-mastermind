@@ -4,12 +4,9 @@
 A mastermind game in Haskell developed during the [Munihac 2016](http://munihac.de/).
 
 ## Installation and requirements
-Clone this repository by typing
-```bash
-git clone https://acanizares@bitbucket.org/acanizares/munihac-mastermind.git
-```
+Clone this repository.
 
-You only need `GHCi` to run the game on your terminal.
+You only need [`GHCi`](http://downloads.haskell.org/~ghc/latest/docs/html/users_guide/ghci.html) to run the game on your terminal.
 
 ## Run the game
 In your terminal, go to the directory where you stored `MasterMind.hs` and start `GHCi`. Start the game by typing `main`.
